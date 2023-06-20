@@ -1,0 +1,18 @@
+#notes-here {
+  display: flex;
+  height: 250px;
+  background-color: aquamarine;
+}
+
+svg {
+  height: 200px;
+}
+
+.staff {
+  stroke: yellow !important;
+}
+
+.note {
+  stroke: darkmagenta !important;
+  fill: darkmagenta !important;
+}
