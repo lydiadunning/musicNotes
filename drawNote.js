@@ -22,11 +22,11 @@ const drawNote = (function () {
   const BLACK_NOTE_RADIUS = '9'
   const HALF_NOTE_RADIUS = '7'
   const CIRCLE_STROKE_WIDTH = STEM_STROKE_WIDTH = '4'
-  const CENTER = 30
+  const CENTER_X = 30
   const X_AXIS_E_OFFSET = 15 // distance eighth note pairs shift from center.
   const STEM_LENGTH = 65
-  const NOTE_SIDE = 7
-  const QUARTER_NOTE_WIDTH = '60'
+  const NOTE_SIDE_DISTANCE = 7
+  const ONE_COUNT_STAFF_WIDTH = '60'
   const STAFF_LINES = ['40', '70', '100', '130', '160']
   const STAFF_STROKE_WIDTH = '3'
   // the VISUAL_STAFF represents the y axes of notes.
@@ -58,7 +58,7 @@ const drawNote = (function () {
   }
 
   // returns the y axis for the top of a note's stem.
-  function stemAdjustY (y, stemUp, change = 0) {
+  function getStemTopY (y, stemUp, change = 0) {
     let y1 = Number(y)
     if (stemUp) {
       y1 -= change
@@ -69,17 +69,17 @@ const drawNote = (function () {
   }
 
   // returns the x axis on the side of a note
-  function stemAdjustX (x, stemUp) {
+  function getStemX (x, stemUp) {
     if (stemUp) {
-      return (parseFloat(x) + NOTE_SIDE).toString()
+      return (parseFloat(x) + NOTE_SIDE_DISTANCE).toString()
     } else {
-      return (parseFloat(x) - NOTE_SIDE).toString()
+      return (parseFloat(x) - NOTE_SIDE_DISTANCE).toString()
     }
   }
 
   function drawStem (x, y, stemUp) {
-    const yStemEnd = stemAdjustY(y, stemUp, STEM_LENGTH)
-    const yStemStart = stemAdjustY(y, stemUp)
+    const yStemEnd = getStemTopY(y, stemUp, STEM_LENGTH)
+    const yStemStart = getStemTopY(y, stemUp)
     return makeSvgWithAttributes(
       'line', 
       {
@@ -134,11 +134,11 @@ const drawNote = (function () {
   }
 
   function drawEighthNotePair (loc1, loc2, stemUp) {
-    const yStemEnd1 = stemAdjustY(loc1.y, stemUp, STEM_LENGTH)
-    const yStemEnd2 = stemAdjustY(loc2.y, stemUp, STEM_LENGTH)
+    const yStemEnd1 = getStemTopY(loc1.y, stemUp, STEM_LENGTH)
+    const yStemEnd2 = getStemTopY(loc2.y, stemUp, STEM_LENGTH)
     const head1 = drawNotehead(loc1.x, loc1.y, 'e')
     const head2 = drawNotehead(loc2.x, loc2.y, 'e')
-    const beam1 = drawBeam(stemAdjustX(loc1.x, stemUp), stemAdjustX(loc2.x, stemUp), loc1.y, loc2.y, yStemEnd1, yStemEnd2)
+    const beam1 = drawBeam(getStemX(loc1.x, stemUp), getStemX(loc2.x, stemUp), loc1.y, loc2.y, yStemEnd1, yStemEnd2)
 
     return [head1, head2, beam1]
   }
@@ -146,7 +146,7 @@ const drawNote = (function () {
   function drawHalfOrQuarterNote (loc, type, stemUp) {
     const notehead = drawNotehead(loc.x, loc.y, type)
     // moves stem to the side of the note
-    loc.x = stemAdjustX(loc.x, stemUp)
+    loc.x = getStemX(loc.x, stemUp)
     const stem = drawStem(loc.x, loc.y, stemUp)
     return [notehead, stem]
   }
@@ -208,8 +208,8 @@ const drawNote = (function () {
     if (duration === 'eighth') {
       if (note2 && note2.duration =='eighth') {
         const pitch2 = note2.pitch
-        const xAxis1 = CENTER - X_AXIS_E_OFFSET
-        const xAxis2 = CENTER + X_AXIS_E_OFFSET
+        const xAxis1 = CENTER_X - X_AXIS_E_OFFSET
+        const xAxis2 = CENTER_X + X_AXIS_E_OFFSET
         const yAxis2 = VISUAL_STAFF[pitch2]
         if (Math.abs(4 - pitch2) < Math.abs(4 - pitch2)) { // stem orientation
           stemUp = pitch2 < 4
@@ -227,12 +227,12 @@ const drawNote = (function () {
       // want to draw a single eighth note? do that here.
     } else {
       drawnNotes.push(drawHalfOrQuarterNote({
-        x: CENTER.toString(),
+        x: CENTER_X.toString(),
         y: yAxis.toString()
       }, duration, stemUp))
     }
 
-    let svgWidth = duration == 'half' ? QUARTER_NOTE_WIDTH * 2 : QUARTER_NOTE_WIDTH
+    let svgWidth = duration == 'half' ? ONE_COUNT_STAFF_WIDTH * 2 : ONE_COUNT_STAFF_WIDTH
 
     const svg = makeSvgWithAttributes(
       'svg',
@@ -241,9 +241,9 @@ const drawNote = (function () {
       }
     )
 
-    const group = makeSvgWithAttributes('g', { 'class': 'staff' })
-    drawStaff(svgWidth).forEach(line => group.appendChild(line))
-    svg.appendChild(group)
+    const staffGroup = makeSvgWithAttributes('g', { 'class': 'staff' })
+    drawStaff(svgWidth).forEach(line => staffGroup.appendChild(line))
+    svg.appendChild(staffGroup)
     const noteGroup = makeSvgWithAttributes('g', { 'class': 'note' })
     drawnNotes.flat().forEach(item => noteGroup.appendChild(item))
     svg.appendChild(noteGroup)
