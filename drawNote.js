@@ -3,7 +3,7 @@
    * 
    * @param {Object} note
    * @param {number} note.pitch - an integer, 1-7
-   * @param {string} note.duration - 'half', 'quarter', or 'eighth'
+   * @param {string} note.duration - '2n', '4n', or '8n'
    * 
    * @param {Object} [note2 = false] - same as note, required for eighth notes
   
@@ -96,7 +96,7 @@ const drawNote = (function () {
 
   function drawNotehead (x, y, type) {
     const coords = {'cx': x, 'cy': y}
-    if (type === 'half') {
+    if (type === '2n') {
       return makeSvgWithAttributes(
         'circle',
         {
@@ -172,19 +172,19 @@ const drawNote = (function () {
 
   // this function narrows the range of permissible notes (they actually can run 0-8, but 0 and 8 are untested)
   // it also filters out single eighth notes, double non-eighth notes, and notes that don't fall within a set duration.
-  // without this function, drawNote only filters half and eighth notes, all others are treated like quarter notes.
+  // without this function, drawNote only filters half and eighth notes, all others are treated like 4n notes.
   function noteValidator (note, note2) {
     let goodPitch = ([1, 2, 3, 4, 5, 6, 7].includes(note.pitch)) 
-    let goodDuration = (['half', 'quarter'].includes(note.duration))
+    let goodDuration = (['2n', '4n'].includes(note.duration))
     if (note2) {
       goodPitch = goodPitch && [1, 2, 3, 4, 5, 6, 7].includes(note2.pitch)
-      goodDuration = note.duration === 'eighth' && note2.duration === 'eighth'
+      goodDuration = note.duration === '8n' && note2.duration === '8n'
 
       if (!goodPitch) console.error(`A note's pitch must be an integer from 1 to 7. These notes' pitches: ${note.pitch}, ${note2.pitch}`)
-      if (!goodDuration) console.error(`Only eighth notes can be drawn in pairs. These notes' durations: ${note.duration}, ${note2.duration} `)
+      if (!goodDuration) console.error(`Only eighth notes (8n) can be drawn in pairs. These notes' durations: ${note.duration}, ${note2.duration} `)
     } else {
       if (!goodPitch) console.error(`A note's pitch must be an integer from 1 to 7. This note's pitch: ${note.pitch}`)
-      if (!goodDuration) console.error(`A single note's duration must be 'half' or 'quarter'. This note's duration: ${note.pitch}`)
+      if (!goodDuration) console.error(`A single note's duration must be '2n' or '4n'. This note's duration: ${note.duration}`)
     }
 
     return goodPitch && goodDuration
@@ -193,11 +193,16 @@ const drawNote = (function () {
   /**
    * @param {Object} note
    * @param {number} note.pitch - an integer, 1-7
-   * @param {string} note.duration - 'half', 'quarter', or 'eighth'
-   * @param {Object} [note2 = false] - same as note, required for eighth notes
+   * @param {string} note.duration - '2n', '4n', or '8n'
+   * @param {Object} [note2 = false] - same as note, required for eighth notes (8n)
    * @return {SVG} an image displaying the note, or notes, on a scale.
    */
   return (note, note2 = false) => {
+    if (note2) {
+      console.log('note', note, 'note2', note2)
+    } else {
+      console.log('note', note)
+    }
     if (!noteValidator(note, note2)) return
 
     const drawnNotes = []
@@ -205,8 +210,8 @@ const drawNote = (function () {
     const yAxis = VISUAL_STAFF[pitch]
     let stemUp = pitch < 4 // boolean- false for notes on top of staff
 
-    if (duration === 'eighth') {
-      if (note2 && note2.duration =='eighth') {
+    if (duration === '8n') {
+      if (note2 && note2.duration =='8n') {
         const pitch2 = note2.pitch
         const xAxis1 = CENTER_X - X_AXIS_E_OFFSET
         const xAxis2 = CENTER_X + X_AXIS_E_OFFSET
@@ -232,7 +237,7 @@ const drawNote = (function () {
       }, duration, stemUp))
     }
 
-    let svgWidth = duration == 'half' ? ONE_COUNT_STAFF_WIDTH * 2 : ONE_COUNT_STAFF_WIDTH
+    let svgWidth = duration == '2n' ? ONE_COUNT_STAFF_WIDTH * 2 : ONE_COUNT_STAFF_WIDTH
 
     const svg = makeSvgWithAttributes(
       'svg',
