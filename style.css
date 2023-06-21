@@ -9,10 +9,10 @@ svg {
 }
 
 .staff {
-  stroke: yellow !important;
+  stroke: yellow;
 }
 
 .note {
-  stroke: darkmagenta !important;
-  fill: darkmagenta !important;
+  stroke: darkmagenta;
+  fill: darkmagenta;
 }
