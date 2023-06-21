@@ -3,7 +3,7 @@ const CMAJOR_SCALE = ['E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5']
 // These numbers each correlate to an index on a scale ranging from the bottom
 // line on the scale (E4 in this C major scale) to the top line on the scale (F5).
 // drawNote limits the available notes to those which fall within this range.
-// this limitation simplifies the process of drawing and scaling svg images.
+// this limitation simplifies the process of drawing and scaling svg images
 
 const noteSpot = document.getElementById('notes-here')
 const button = document.getElementById('input')

@@ -198,11 +198,6 @@ const drawNote = (function () {
    * @return {SVG} an image displaying the note, or notes, on a scale.
    */
   return (note, note2 = false) => {
-    if (note2) {
-      console.log('note', note, 'note2', note2)
-    } else {
-      console.log('note', note)
-    }
     if (!noteValidator(note, note2)) return
 
     const drawnNotes = []
