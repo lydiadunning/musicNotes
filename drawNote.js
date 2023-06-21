@@ -1,6 +1,3 @@
-// For drawing card images using svg.
-// Calling drawcard returns an svg image, but does not add it to the DOM
-
   /**
    * drawNote 
    * 
@@ -21,7 +18,7 @@ const drawNote = (function () {
   // if reformatting, keep the capitalization, to simplify identifying constants.
   const STAFF_COLOR = 'thistle'
   const NOTE_COLOR = 'black'
-  const CARD_HEIGHT = '200'
+  const SVG_HEIGHT = '200'
   const BLACK_NOTE_RADIUS = '9'
   const HALF_NOTE_RADIUS = '7'
   const CIRCLE_STROKE_WIDTH = STEM_STROKE_WIDTH = '4'
@@ -175,7 +172,7 @@ const drawNote = (function () {
 
   // this function narrows the range of permissible notes (they actually can run 0-8, but 0 and 8 are untested)
   // it also filters out single eighth notes, double non-eighth notes, and notes that don't fall within a set duration.
-  // without this function, drawCards only filters half and eighth notes, all others are treated like quarter notes.
+  // without this function, drawNote only filters half and eighth notes, all others are treated like quarter notes.
   function noteValidator (note, note2) {
     let goodPitch = ([1, 2, 3, 4, 5, 6, 7].includes(note.pitch)) 
     let goodDuration = (['half', 'quarter'].includes(note.duration))
@@ -240,7 +237,7 @@ const drawNote = (function () {
     const svg = makeSvgWithAttributes(
       'svg',
       {
-        'viewBox': `0 0 ${svgWidth} ${CARD_HEIGHT}`
+        'viewBox': `0 0 ${svgWidth} ${SVG_HEIGHT}`
       }
     )
 
